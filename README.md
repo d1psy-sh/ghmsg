@@ -15,6 +15,26 @@ The documentation is [here](https://docs.github.com/en/rest/activity/notificatio
 
 The info for that is [here](https://docs.github.com/en/rest/activity/notifications?apiVersion=2022-11-28#list-notifications-for-the-authenticated-user)...
 
+## API Key is saved in dotenv file
+
+For this project I used the lib `dotenvy` for `.env` environment variables.
+
+```rust
+use dotenvy::dotenv;
+
+fn get_vars() {
+    // load vars from .env file
+    dotenv().ok();
+    // get one var by name
+    let test = dotenvy::var("TEST");
+    // match the result
+    match test {
+        Ok(test) => println!(test),
+        Err(_) => println!("test not set")
+    }
+}
+```
+
 ## Contribution
 
 If you have an idea or see a bug or a best practice missed feel free to make a PR, I am eager to learn :D!
