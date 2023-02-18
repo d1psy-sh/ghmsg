@@ -1,3 +1,7 @@
+use ghmsg::cli::Cli;
+
 fn main() {
-    println!("Hello, world!");
+    let mut c = Cli::new();
+    c.init();
+    c.run();
 }

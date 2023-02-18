@@ -1,6 +1,6 @@
 # GitHub Message
 
-GitHub Message is an application that uses the GitHub API to display the messages one user received on GitHub
+GitHub Message is an application that uses the GitHub API to display the messages one user received on GitHub b
 in the terminal. You can set different filters or search for a specific term.
 
 ## Authentication for GitHub user
