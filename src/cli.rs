@@ -22,10 +22,14 @@ impl Cli {
                 std::process::exit(1);
             }
         };
-        let notifications = match render_notifications::serialize(json) {
+        if json.is_empty() {
+            println!("No notifications");
+            std::process::exit(0);
+        }
+        let notifications = match render_notifications::serialize(&json) {
             ok @ Ok(_) => ok.unwrap(),
             err @ Err(_) => {
-                println!("Error in serialization: {}", err.unwrap_err());
+                println!("Error in serialization: {}\nThe JSON was: {}", err.unwrap_err(), json);
                 std::process::exit(1);
             }
         };

@@ -165,8 +165,8 @@ pub struct Subject {
     pub type_field: Option<String>,
 }
 
-pub fn serialize(json:String) -> Result<Notifications, Box<dyn std::error::Error>> {
-    Ok(serde_json::from_str::<Notifications>(&json)?)
+pub fn serialize(json: &str) -> Result<Notifications, Box<dyn std::error::Error>> {
+    Ok(serde_json::from_str::<Notifications>(json)?)
 }
 
 pub fn render(ns: Notifications) -> Vec<String> {
