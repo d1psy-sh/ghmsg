@@ -1,7 +1,14 @@
-use cursive::views::{Dialog, TextView};
+use clap::builder::StyledStr;
+use cursive::theme::Style;
+use cursive::utils::markup::StyledString;
+use cursive::views::ListView;
+use cursive::views::ScrollView;
+use cursive::views::TextView;
 
 use crate::render_notifications;
 use crate::request;
+
+const PAGE_SIZE: usize = 10;
 
 pub struct Cli {
     pub siv: cursive::CursiveRunnable,
@@ -22,31 +29,32 @@ impl Cli {
                 std::process::exit(1);
             }
         };
+        // check if there are any notifications
         if json.is_empty() {
             println!("No notifications");
             std::process::exit(0);
         }
+        // handle error in de serialization
         let notifications = match render_notifications::serialize(&json) {
             ok @ Ok(_) => ok.unwrap(),
             err @ Err(_) => {
-                println!("Error in serialization: {}\nThe JSON was: {}", err.unwrap_err(), json);
+                println!(
+                    "Error in serialization: {}\nThe JSON was: {}",
+                    err.unwrap_err(),
+                    json
+                );
                 std::process::exit(1);
             }
         };
-        let rendered_notifications = render_notifications::render(notifications);
-        let mut text = String::new();
-        rendered_notifications
-            .into_iter()
-            .for_each(|n| text.push_str(&format!("- {}\n", n)));
         self.siv.add_global_callback('q', |s| s.quit());
-        // TODO: add the notifications here in a very nice format
-        let text_view = TextView::new(text);
-        self.siv.add_layer(
-            Dialog::new()
-                .content(text_view)
-                .title("GitHub Notifications")
-                .button("QUIT", |s| s.quit()),
-        );
+        let mut text: String = String::new();
+        // set the heading
+        text.push_str("NOTIFICATIONS\n\n");
+        for notification in notifications {
+            text.push_str(&(notification.text() + "\n"));
+        }
+        text.push_str("\nPress q to quit");
+        self.siv.add_layer(ScrollView::new(TextView::new(text)));
     }
     pub fn run(&mut self) {
         self.siv.run();
@@ -58,13 +66,3 @@ impl Default for Cli {
         Self::new()
     }
 }
-
-// TODO: implement this for next so +1 pages and prev -1 pages
-// pub fn next(siv: &mut cursive::Cursive, msg: &str) {
-//     siv.pop_layer();
-//     siv.add_layer(
-//         Dialog::text(msg)
-//             .title(format!("GitHub Messages Page {}", msg))
-//             .button("Next", |s| next(s, "Hello")),
-//     );
-// }

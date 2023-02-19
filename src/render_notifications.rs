@@ -165,17 +165,24 @@ pub struct Subject {
     pub type_field: Option<String>,
 }
 
-pub fn serialize(json: &str) -> Result<Notifications, Box<dyn std::error::Error>> {
-    Ok(serde_json::from_str::<Notifications>(json)?)
+impl Notification {
+    pub fn text(&self) -> String {
+        let mut text = String::new();
+        if let Some(ref subject) = self.subject {
+            if let Some(ref title) = subject.title {
+                text.push_str(title);
+            }
+        }
+        if let Some(ref repository) = self.repository {
+            if let Some(ref full_name) = repository.full_name {
+                text.push_str(" - ");
+                text.push_str(full_name);
+            }
+        }
+        text
+    }
 }
 
-pub fn render(ns: Notifications) -> Vec<String> {
-    let mut ret = Vec::new();
-    for notification in ns {
-        ret.push(format!(
-            "{}: {}",
-            notification.repository.unwrap().full_name.unwrap(), notification.subject.unwrap().title.unwrap()
-        ));
-    }
-    ret
+pub fn serialize(json: &str) -> Result<Notifications, Box<dyn std::error::Error>> {
+    Ok(serde_json::from_str::<Notifications>(json)?)
 }
